@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en-US">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+    integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+    crossorigin="anonymous"></script>
+
+  <title>Hello app</title>
+</head>
+
+<body style="background-color: dimgray;">
+  <div id="app">
+    <div class="container">
+      <nav class="navbar navbar-expand-sm bg-dark navbar-dark ">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="https://mywebappproject.azurewebsites.net/swagger/index.html">Link til API</a>
+          </li>
+        </ul>
+      </nav>
+      <div class="row">
+        <div class="col text-center">
+          <div class="card bg-secondary">
+            <div class="card-body">
+              <table class="table table-dark table-striped " v-if="songlist.length > 0">
+                <thead>
+                  <th>Title</th>
+                  <th>Artist</th>
+                  <th>Duration</th>
+                  <th>Year of publication</th>
+                </thead>
+                <tbody>
+                  <tr v-for="songs in songlist">
+                    <td>{{songs.title}}</td>
+                    <td>{{songs.artist}}</td>
+                    <td>{{songs.duration}}</td>
+                    <td>{{songs.yearOfPublication}}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <button class="btn btn-primary" v-on:click="GetAllSongs()">Get Song list</button>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+
+
+
+        <div class="col text-center">
+          <div class="card bg-secondary">
+            <div class="card-body">
+              <input type="text" class="form control" v-model="title">
+              <button class="btn btn-primary" v-on:click="GetSongByTitleAsync(title)">Get Song by title</button>
+              <table class="table table-dark table-striped " v-if="song != null">
+                <thead>
+                  <th>Title</th>
+                  <th>Artist</th>
+                  <th>Duration</th>
+                  <th>Year of publication</th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{song.title}}</td>
+                    <td>{{song.artist}}</td>
+                    <td>{{song.duration}}</td>
+                    <td>{{song.yearOfPublication}}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+
+      <div class="row">
+
+        <div class="col-sm-6 text-center">
+          <div class="card bg-secondary">
+            <div class="card-body">
+              <div class="form-group">
+                <input type="text" class="form-control" v-model="formdata.title" placeholder="Title">
+                <input type="text" class="form-control" v-model="formdata.artist" placeholder="Artist">
+                <input type="number" class="form-control" v-model.number="formdata.duration" placeholder="Duration">
+                <input type="number" class="form-control" v-model.number="formdata.yearOfPublication"
+                  placeholder="Year of Publication">
+                <button v-on:click="AddSong()" class="btn btn-primary">Add a song</button>
+                <button v-on:click="UpdateSong()" class="btn btn-primary">Update Song</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- <div class="col-sm-6 text-center">
+          <div class="card bg-secondary">
+            <div class="card-body">
+              <div class="form-group">
+                <input type="text" class="form-control" v-model="formdata.title" placeholder="Title">
+                <input type="text" class="form-control" v-model="formdata.artist" placeholder="Artist">
+                <input type="number" class="form-control" v-model.number="formdata.duration" placeholder="Duration">
+                <input type="number" class="form-control" v-model.number="formdata.yearOfPublication"
+                  placeholder="Year of Publication">
+                <button v-on:click="UpdateSong()" class="btn btn-primary">Send</button>
+              </div>
+            </div>
+          </div>
+
+
+        </div> -->
+        <div class="col-sm-6 text-center">
+          <div class="card bg-secondary">
+            <div class="card-body">
+              <div class="form-group">
+                <input type="text" class="form-control" v-model="deleteTitle" placeholder="Title">
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Delete
+                  Song</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Warning</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                Do you want to delete the song?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" data-dismiss="modal" v-on:click="DeleteSong(deleteTitle)" class="btn btn-primary">Delete Song</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  </div>
+
+
+  <script src="bundle.js"></script>
+</body>
+
+</html>
